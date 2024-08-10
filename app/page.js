@@ -1,95 +1,147 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import { useState } from "react";
+import Link from 'next/link'
+import { firestore } from '@/firebase'
+import { Box, Button, TextField, InputAdornment, IconButton, Typography, AppBar, Toolbar, Container } from '@mui/material'
+import { FaSearch } from 'react-icons/fa'
+import {
+  doc,
+  getDoc
+} from 'firebase/firestore'
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResult, setSearchResult] = useState(null);
+
+  const handleSearch = async () => {
+    if (!searchQuery) {
+      setSearchResult(null);
+      return;
+    }
+
+    try {
+      const normalizedQuery = searchQuery.toLowerCase();
+      const docRef = doc(firestore, 'inventory', normalizedQuery);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const result = {
+          name: docSnap.id,
+          ...docSnap.data()
+        };
+        setSearchResult(result);
+      } else {
+        setSearchResult(null);
+      }
+    } catch (error) {
+      console.error('Error searching documents:', error);
+      setSearchResult(null);
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Box
+      sx={{
+        width: '100vw',
+        height: '100vh',
+        backgroundImage: 'url(/grocery.webp)', // Replace with your image path
+        backgroundSize: 'cover',
+        backgroundPosition: 'right', // Position the image to the right
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+      }}
+    >
+      {/* Navbar */}
+      {/* Navbar */}
+<AppBar position="static" sx={{ backgroundColor: '#87CEEED', width: '100%' }}>
+  <Toolbar>
+    <Typography variant="h6" sx={{ flexGrow: 1, fontSize: '1.8rem', fontWeight: 'bold' }}>
+      Grocery Tracker
+    </Typography>
+    <Link href="/dashboard" passHref>
+      <Button sx={{ color: 'white' }}>Dashboard</Button>
+    </Link>
+    <Link href="/signin" passHref>
+      <Button sx={{ color: 'white' }}>Sign In</Button>
+    </Link>
+    <Link href="/signup" passHref>
+      <Button sx={{ color: 'white' }}>Sign Up</Button>
+    </Link>
+  </Toolbar>
+</AppBar>
+
+
+      {/* Main content container */}
+      <Container
+        sx={{
+          mt: 8,  // Margin top to push content below the navbar
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          zIndex: 2,
+          position: 'relative',
+        }}
+      >
+        <Box
+          display="flex"
+          alignItems="center"
+          mb={2}
+          gap={2}
+          sx={{ width: '100%', maxWidth: '600px' }}
+        >
+          <TextField
+            label="Search Items"
+            variant="outlined"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleSearch}>
+                    <FaSearch />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              width: '100%',
+              backgroundColor: 'rgba(255, 255, 255, 0.8)', // Light background color
+              borderRadius: '8px', // Rounded corners
+              padding: '8px', // Padding for better visibility
+              border: '1px solid #ccc' // Border for better visibility
+            }}
+          />
+        </Box>
+
+        {searchResult ? (
+          <Box
+            width="300px"
+            p={2}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            border="1px solid #333"
+            borderRadius="8px"
+            bgcolor="#f0f0f0"
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+            <Typography variant="h4" color="#333" textAlign="center">
+              {searchResult.name.charAt(0).toUpperCase() + searchResult.name.slice(1)}
+            </Typography>
+            <Typography variant="h6" color="#333" textAlign="center">
+              Quantity: {searchResult.quantity}
+            </Typography>
+          </Box>
+        ) : (
+          searchQuery && (
+            <Typography variant="h6" color="textSecondary" textAlign="center">
+              No items found
+            </Typography>
+          )
+        )}
+      </Container>
+    </Box>
   );
 }
