@@ -2,8 +2,8 @@
 import { useState } from "react";
 import Link from 'next/link'
 import { firestore } from '@/firebase'
-import { Box, Button, TextField, InputAdornment, IconButton, Typography, AppBar, Toolbar, Container } from '@mui/material'
-import { FaSearch } from 'react-icons/fa'
+import { Box, Button, TextField, InputAdornment, IconButton, Typography, AppBar, Toolbar, Container, Drawer, List, ListItem, ListItemText } from '@mui/material'
+import { FaSearch, FaBars } from 'react-icons/fa'
 import {
   doc,
   getDoc
@@ -12,6 +12,7 @@ import {
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleSearch = async () => {
     if (!searchQuery) {
@@ -39,6 +40,13 @@ export default function Home() {
     }
   };
 
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setDrawerOpen(open);
+  };
+
   return (
     <Box
       sx={{
@@ -54,24 +62,62 @@ export default function Home() {
       }}
     >
       {/* Navbar */}
-      {/* Navbar */}
-<AppBar position="static" sx={{ backgroundColor: '#87CEEED', width: '100%' }}>
-  <Toolbar>
-    <Typography variant="h6" sx={{ flexGrow: 1, fontSize: '1.8rem', fontWeight: 'bold' }}>
-      Grocery Tracker
-    </Typography>
-    <Link href="/dashboard" passHref>
-      <Button sx={{ color: 'white' }}>Dashboard</Button>
-    </Link>
-    <Link href="/signin" passHref>
-      <Button sx={{ color: 'white' }}>Sign In</Button>
-    </Link>
-    <Link href="/signup" passHref>
-      <Button sx={{ color: 'white' }}>Sign Up</Button>
-    </Link>
-  </Toolbar>
-</AppBar>
+      <AppBar position="static" sx={{ backgroundColor: '#87CEEED', width: '100%' }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography
+            variant="h6"
+            sx={{ fontSize: { xs: '1.5rem', sm: '1.8rem' }, fontWeight: 'bold' }}
+          >
+            Grocery Tracker
+          </Typography>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer(true)}
+            sx={{ display: { xs: 'block', sm: 'none' } }} // Show on small screens only
+          >
+            <FaBars />
+          </IconButton>
+          <Box sx={{ display: { xs: 'none', sm: 'flex' } }}> {/* Hide on small screens */}
+            <Link href="/dashboard" passHref>
+              <Button sx={{ color: 'white' }}>Dashboard</Button>
+            </Link>
+            <Link href="/signin" passHref>
+              <Button sx={{ color: 'white' }}>Sign In</Button>
+            </Link>
+            <Link href="/signup" passHref>
+              <Button sx={{ color: 'white' }}>Sign Up</Button>
+            </Link>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
+      {/* Drawer for small screens */}
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+      >
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
+          <List>
+            <ListItem button component="a" href="/dashboard">
+              <ListItemText primary="Dashboard" />
+            </ListItem>
+            <ListItem button component="a" href="/signin">
+              <ListItemText primary="Sign In" />
+            </ListItem>
+            <ListItem button component="a" href="/signup">
+              <ListItemText primary="Sign Up" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
 
       {/* Main content container */}
       <Container
@@ -82,6 +128,7 @@ export default function Home() {
           alignItems: 'center',
           zIndex: 2,
           position: 'relative',
+          px: { xs: 2, sm: 4 },
         }}
       >
         <Box
@@ -89,7 +136,7 @@ export default function Home() {
           alignItems="center"
           mb={2}
           gap={2}
-          sx={{ width: '100%', maxWidth: '600px' }}
+          sx={{ width: '100%', maxWidth: '600px', flexDirection: { xs: 'column', sm: 'row' } }}
         >
           <TextField
             label="Search Items"
@@ -117,7 +164,7 @@ export default function Home() {
 
         {searchResult ? (
           <Box
-            width="300px"
+            width={{ xs: '100%', sm: '300px' }}
             p={2}
             display="flex"
             flexDirection="column"

@@ -137,6 +137,7 @@ export default function Dashboard() {
       flexDirection={'column'}
       alignItems={'center'}
       gap={2}
+      sx={{ paddingX: { xs: 2, sm: 4 }, paddingY: { xs: 2, sm: 4 } }} // Responsive padding
     >
       <Button variant="contained" onClick={handleOpen}>
         Add New Item
@@ -148,7 +149,7 @@ export default function Dashboard() {
           top="50%"
           left="50%"
           transform="translate(-50%,-50%)"
-          width={400}
+          width={{ xs: 300, sm: 400 }} // Responsive width
           bgcolor='white'
           border='2px solid #000'
           boxShadow={24}
@@ -156,7 +157,6 @@ export default function Dashboard() {
           display='flex'
           flexDirection='column'
           gap={3}
-          
         >
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Manage Item
@@ -221,20 +221,20 @@ export default function Dashboard() {
         </Box>
       </Modal>
 
-      <Box border={'1px solid #333'}>
+      <Box width="100%" maxWidth={{ xs: '100%', sm: '800px' }} border={'1px solid #333'}>
         <Box
-          width="800px"
+          width="100%"
           height="100px"
           bgcolor={'#ADC8E9'}
           display={'flex'}
           justifyContent={'center'}
           alignItems={'center'}
         >
-          <Typography variant={'h2'} color={'#333'} textAlign={'center'}>
+          <Typography variant={'h4'} color={'#333'} textAlign={'center'}>
             Grocery Items
           </Typography>
         </Box>
-        <Stack width="800px" height="300px" spacing={2} overflow={'auto'}>
+        <Stack width="100%" maxWidth={{ xs: '100%', sm: '800px' }} height="300px" spacing={2} overflow={'auto'}>
           {inventory.length > 0 ? (
             inventory.map(({ name, quantity }) => (
               <Box
@@ -245,12 +245,13 @@ export default function Dashboard() {
                 justifyContent={'space-between'}
                 alignItems={'center'}
                 bgcolor={'#f0f0f0'}
-                paddingX={5}
+                paddingX={3}
+                sx={{ flexDirection: { xs: 'column', sm: 'row' } }} // Stack items vertically on small screens
               >
-                <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
+                <Typography variant={'h6'} color={'#333'} textAlign={'center'}>
                   {name.charAt(0).toUpperCase() + name.slice(1)}
                 </Typography>
-                <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
+                <Typography variant={'h6'} color={'#333'} textAlign={'center'}>
                   Quantity: {quantity}
                 </Typography>
                 <Box display="flex" alignItems="center" gap={2}>
